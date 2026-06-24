@@ -1,4 +1,4 @@
-# LM-002: AI-Powered Email Automation with n8n and Gemini AI
+# AI-Powered Email Automation with n8n and Gemini AI
 
 ## Overview
 
