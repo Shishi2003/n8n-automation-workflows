@@ -1,0 +1,191 @@
+{
+  "name": "M3 API Fundamentals",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "User DAta",
+        "formFields": {
+          "values": [
+            {
+              "fieldName": "email",
+              "fieldLabel": "email",
+              "fieldType": "email",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.4,
+      "position": [
+        -464,
+        -16
+      ],
+      "id": "82405fff-f675-400f-aa97-9b47543d4c1e",
+      "name": "On form submission",
+      "webhookId": "2ea5541a-c521-4601-add6-b93cd6818c46"
+    },
+    {
+      "parameters": {
+        "url": "https://api.peopledatalabs.com/v5/person/enrich",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "={{$json[\"email\"]}}"
+            },
+            {
+              "name": "api_key",
+              "value": "da8b179725eaef3beafb09ffbe72c5ec27fc76419b95e9a3d9d10249e85d8ca8"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -256,
+        -16
+      ],
+      "id": "829b58e6-a32a-4626-928d-71ac8717d072",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "https://api.jsonbin.io/v3/b/69771a7143b1c97be94ac619/latest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Master-Key",
+              "value": "$2a$10$TFR1aCzW3zNwAsxwVxaU7eqFb2jX3BnEN5UPULBJEaQMczrl0aSnq"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -32,
+        -16
+      ],
+      "id": "16f7ad0d-b9dd-4747-90a2-67e4808d65da",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{\n  {\n    ...$json.record,\n    [$node[\"On form submission\"].json.email]: $node[\"HTTP Request\"].json.data\n  }\n}}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        176,
+        -16
+      ],
+      "id": "582ba35f-c48f-4306-9e5e-4579caf97a0a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.jsonbin.io/v3/b/69771a7143b1c97be94ac619",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Master-Key",
+              "value": "$2a$10$TFR1aCzW3zNwAsxwVxaU7eqFb2jX3BnEN5UPULBJEaQMczrl0aSnq"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        352,
+        -16
+      ],
+      "id": "2216f5c6-a627-44b8-aa5e-65046892864b",
+      "name": "HTTP Request2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ea8414fa-2909-40ec-a931-3e1883b51daa",
+  "meta": {
+    "instanceId": "5a064eab1f268946bc007c4172b2fb6debef9dbda2a90313cc0c931db4dbf7e6"
+  },
+  "id": "lifAQRLcvKcugjluSl8v9",
+  "tags": []
+}
