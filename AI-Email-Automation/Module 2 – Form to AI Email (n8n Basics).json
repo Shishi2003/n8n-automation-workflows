@@ -1,0 +1,148 @@
+{
+  "name": "Module 2 – Form to AI Email (n8n Basics)",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Contact form",
+        "formDescription": "Submit your details and comments",
+        "formFields": {
+          "values": [
+            {
+              "fieldName": "name",
+              "fieldLabel": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldName": "email",
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldName": "message",
+              "fieldLabel": "Message",
+              "fieldType": "textarea",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "12122c87-f529-4832-a72b-ad76de2fd400",
+      "name": "On form submission",
+      "webhookId": "9f449660-323e-4f07-8289-c0892074eab2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an assistant that writes professional, polite email replies.\n\nWrite a concise and friendly email reply based on the following user submission.\n\nName: {{ $json.name }}\nMessage: {{ $json.message }}\n\nRules (must follow):\n- Start the email with: \"Hello {{ $json.name }},\"\n- Acknowledge the user's message.\n- Keep the tone professional and warm.\n- Do NOT use placeholders or brackets.\n- Do NOT mention AI or automation.\n- End with a friendly closing.\n\nReturn ONLY the email body text.\nNo subject line. No explanations.\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        208,
+        0
+      ],
+      "id": "92bf5d86-827a-4f00-b97f-7b46f1fe44c2",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        144,
+        208
+      ],
+      "id": "0b9109e3-1cf8-456d-973d-1b81fc9cd93d",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Hf958taBNaC6Muu1",
+          "name": "Google Gemini(PaLM) Api account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $node[\"On form submission\"].json[\"email\"] }}",
+        "subject": "Thank you for contacting us",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "f7756cb5-0cba-452d-be01-cae553b55b65",
+      "name": "Send a message",
+      "webhookId": "3bf3dbd8-aaf5-4cf0-a2d6-7d37937c3903",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "nKYHMUKW5ELeIhiH",
+          "name": "Gmail account 12"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b6526a06-0df1-40a3-ac21-12dc0a3a2026",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5a064eab1f268946bc007c4172b2fb6debef9dbda2a90313cc0c931db4dbf7e6"
+  },
+  "id": "2RzfnWejCAlggkCw6_Oet",
+  "tags": []
+}
