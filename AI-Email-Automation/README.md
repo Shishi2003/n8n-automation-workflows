@@ -39,7 +39,7 @@ The workflow begins with an n8n Form Trigger node that collects user input.
 ```json
 {
   "name": "Aryan",
-  "email": "aryanma777@gmail.com",
+  "email": "aryan123@gmail.com",
   "message": "Fantastic"
 }
 ```
@@ -137,7 +137,7 @@ An email is automatically sent to the submitted email address.
 ```json
 {
   "name": "Aryan",
-  "email": "aryanma777@gmail.com",
+  "email": "aryan123@gmail.com",
   "message": "Fantastic"
 }
 ```
