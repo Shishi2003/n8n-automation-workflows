@@ -158,23 +158,12 @@ The generated message is automatically sent through Gmail to the user's email ad
 
 ---
 
-## Screenshots
 
-### Workflow Overview
+## Workflow Overview
 
 Displays the complete workflow architecture and node connections.
 
-### Form Submission Node
 
-Shows the form trigger configuration and captured input data.
-
-### Gemini LLM Chain
-
-Demonstrates AI prompt processing and response generation.
-
-### Gmail Node
-
-Shows automated email delivery using Gmail integration.
 
 ---
 
@@ -205,13 +194,6 @@ This workflow can be adapted for:
 
 ---
 
-## Live Demo
-
-**Form URL**
-
-https://n8n.srv965596.hstgr.cloud/form/9f449660-323e-4f07-8289-c0892074eab2
-
----
 
 ## Conclusion
 
