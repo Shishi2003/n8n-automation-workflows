@@ -163,7 +163,7 @@ The generated message is automatically sent through Gmail to the user's email ad
 
 Displays the complete workflow architecture and node connections.
 
-
+![Workflow Overview](Screenshots/workflow-overview.png)
 
 ---
 
