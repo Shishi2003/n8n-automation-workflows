@@ -176,6 +176,7 @@ This workflow demonstrates how custom JavaScript can transform complex JSON into
 
 Shows the complete automation pipeline.
 
+![Workflow Overview](Screenshots/workflow-overview.png)
 
 ---
 
