@@ -1,0 +1,90 @@
+{
+  "name": "Lead Filtering with JS",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f3d05543-7589-4312-938b-9a1e273df389",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://api.jsonbin.io/v3/b/69731a76d0ea881f407ee836/latest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Master-Key",
+              "value": "$2a$10$TFR1aCzW3zNwAsxwVxaU7eqFb2jX3BnEN5UPULBJEaQMczrl0aSnq"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "147bc664-b58a-4d61-9dd1-65c271b1df4e",
+      "name": "JSONBin READ"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recursively collect all email-keyed objects from any depth\nfunction collectLeads(obj, results = {}) {\n  if (!obj || typeof obj !== \"object\") return results;\n\n  for (const key in obj) {\n    const value = obj[key];\n\n    if (key.includes(\"@\") && typeof value === \"object\") {\n      results[key] = value;\n    } else if (typeof value === \"object\") {\n      collectLeads(value, results);\n    }\n  }\n  return results;\n}\n\n// Step 1: Get full JSON\nconst raw = $input.first().json;\n\n// Step 2: Collect all leads no matter how deeply nested\nconst allLeadsObj = collectLeads(raw);\nconst records = Object.entries(allLeadsObj).map(([email, lead]) => ({\n  email,\n  ...lead\n}));\n\n// Step 3: Filter ONLY Gmail, Yahoo, Hotmail\nconst publicDomains = [\"gmail.com\", \"yahoo.com\", \"hotmail.com\"];\n\nconst qualifiedLeads = records\n  .filter(lead => {\n    if (!lead.email || !lead.email.includes(\"@\")) return false;\n    const domain = lead.email.split(\"@\")[1].toLowerCase();\n    return !publicDomains.includes(domain);\n  })\n  .map(lead => {\n    const primaryExp = lead.experience?.[0]?.company;\n\n    return {\n      email: lead.email,\n      company_name: primaryExp?.name || lead.job_company_name || null,\n      company_domain: primaryExp?.website || lead.job_company_website || null,\n      employee_count: primaryExp?.size || lead.job_company_size || null,\n      industry: primaryExp?.industry || lead.job_company_industry || null,\n      location: primaryExp?.location?.name || lead.job_company_location_name || null\n    };\n  });\n\n// Step 4: Return ALL qualified leads\nreturn qualifiedLeads.map(item => ({ json: item }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "8f0edb76-fe47-4784-8015-0aa4803f423b",
+      "name": "Flatten & Filter Leads",
+      "alwaysOutputData": false
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "JSONBin READ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSONBin READ": {
+      "main": [
+        [
+          {
+            "node": "Flatten & Filter Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7ff5e3b4-878d-40d4-8f8e-a0c98154fedc",
+  "meta": {
+    "instanceId": "5a064eab1f268946bc007c4172b2fb6debef9dbda2a90313cc0c931db4dbf7e6"
+  },
+  "id": "atU1wQ-mQWtPeTz71bDtj",
+  "tags": []
+}
