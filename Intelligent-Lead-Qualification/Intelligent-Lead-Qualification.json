@@ -1,0 +1,258 @@
+{
+  "name": "Intelligent-Lead-Qualification",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Lead Qualification Form",
+        "formDescription": "Submit your email to get started",
+        "formFields": {
+          "values": [
+            {
+              "fieldName": "name",
+              "fieldLabel": "Name"
+            },
+            {
+              "fieldName": "email",
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "Your Response is being processed!"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.4,
+      "position": [
+        -480,
+        -160
+      ],
+      "id": "fc0c13ec-8b3e-492f-9d89-1707d5100757",
+      "name": "On form submission",
+      "webhookId": "0ef09be8-d638-4bda-80db-32bf51ff6139"
+    },
+    {
+      "parameters": {
+        "jsCode": "const email = $json.email.toLowerCase();\nconst domain = email.split(\"@\")[1];\n\nconst publicDomains = [\n  \"gmail.com\",\n  \"yahoo.com\",\n  \"hotmail.com\",\n  \"outlook.com\",\n  \"icloud.com\",\n  \"student.sju.edu.in\"\n];\n\nconst isCompany = !publicDomains.includes(domain);\n\nreturn [{\n  json: {\n    email,\n    domain,\n    isCompany\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        -160
+      ],
+      "id": "090e5e9a-4228-446b-9264-f842f1fb91ed",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a6bd972f-a2ba-4cfc-9725-87ca8dd533a4",
+              "leftValue": "={{ $json.isCompany }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -64,
+        -160
+      ],
+      "id": "f72295ec-2860-4fca-93d4-1d2a5748e23f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "https://api.peopledatalabs.com/v5/person/enrich",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "= {{ $json.email }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "da8b179725eaef3beafb09ffbe72c5ec27fc76419b95e9a3d9d10249e85d8ca8"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        160,
+        -256
+      ],
+      "id": "f023cb83-31b7-4829-9f53-5ab5debe8d33",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "Thanks for signing up!",
+        "message": "Hi,  Thanks for signing up!  We’re excited to have you with us.   You’ll soon receive updates and useful resources from our team.  If you have any questions, feel free to reply to this email.  Best regards,   Your Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        -80
+      ],
+      "id": "ffd51808-e565-439c-864c-f44cf0d70baa",
+      "name": "Send a message",
+      "webhookId": "b500f794-e3b8-4fa4-b543-c5c0de8e2bb9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "nKYHMUKW5ELeIhiH",
+          "name": "Gmail account 12"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const person = $json.data;\n\nreturn [\n  {\n    json: {\n      firstName: person.first_name || \"there\",\n      fullName: person.full_name || \"\",\n      company: person.job_company_name || \"your company\",\n      title: person.job_title || \"your role\",\n      email: person.work_email || $node[\"If\"].json.email\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        -256
+      ],
+      "id": "a6aaa46d-be99-40c4-a6d8-7630844b7ecf",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}\n",
+        "subject": "=Proposal for {{ $json.company }}",
+        "message": "=Hi {{ $json.firstName }},  I came across your profile at {{ $json.company }} and noticed your role as {{ $json.title }}.  We’d love to explore how we can support your work with tailored solutions.  Let me know if you'd like to connect.  Best, Your Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        -256
+      ],
+      "id": "ff681a13-b466-47c5-893e-8181945d097b",
+      "name": "Send a message1",
+      "webhookId": "30c9cba1-3955-40bd-b75f-52d6e676b88a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "nKYHMUKW5ELeIhiH",
+          "name": "Gmail account 12"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "9734b3d7-753e-4797-b209-c0dea0e1d3e8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5a064eab1f268946bc007c4172b2fb6debef9dbda2a90313cc0c931db4dbf7e6"
+  },
+  "id": "eimbMvaNx3WT6Uvkr6HVv",
+  "tags": []
+}
