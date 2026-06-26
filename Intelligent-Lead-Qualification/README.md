@@ -242,7 +242,7 @@ Send Email
 
 Displays the complete automation workflow.
 
-
+![Workflow Overview](Screenshots/workflow-overview.png)
 
 ---
 
