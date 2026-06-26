@@ -194,7 +194,7 @@ The profile is appended to the JSONBin dataset and becomes available for future 
 
 Displays the complete workflow architecture and node sequence.
 
-
+![Workflow Overview](Screenshots/workflow-overview.png)
 
 ---
 
