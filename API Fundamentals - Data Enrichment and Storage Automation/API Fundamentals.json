@@ -38,7 +38,7 @@
             },
             {
               "name": "api_key",
-              "value": "da8b179725eaef3beafb09ffbe72c5ec27fc76419b95e9a3d9d10249e85d8ca8"
+              "value": "YOUR_PDL_API_KEY"
             }
           ]
         },
@@ -67,7 +67,7 @@
           "parameters": [
             {
               "name": "X-Master-Key",
-              "value": "$2a$10$TFR1aCzW3zNwAsxwVxaU7eqFb2jX3BnEN5UPULBJEaQMczrl0aSnq"
+              "value": "YOUR_JSONBIN_MASTER_KEY"
             }
           ]
         },
