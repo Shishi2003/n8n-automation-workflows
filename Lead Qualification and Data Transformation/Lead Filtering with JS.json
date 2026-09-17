@@ -20,7 +20,7 @@
           "parameters": [
             {
               "name": "X-Master-Key",
-              "value": "$2a$10$TFR1aCzW3zNwAsxwVxaU7eqFb2jX3BnEN5UPULBJEaQMczrl0aSnq"
+              "value": "YOUR_JSONBIN_MASTER_KEY"
             }
           ]
         },
